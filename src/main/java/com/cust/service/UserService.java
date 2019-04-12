@@ -16,8 +16,8 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
+//    @Autowired
+//    private RedisTemplate<Object, Object> redisTemplate;
 
     public String selectUserOpenId(String openid) {
         User userInfo = userMapper.selectUser(openid);

@@ -134,6 +134,8 @@ public class UserController {
             reqMap.put("status", "0");
             return reqMap;
         }
-        return null;
+        System.out.println("redis not found");
+        reqMap.put("status","-1");
+        return reqMap;
     }
 }
