@@ -1,6 +1,7 @@
 package com.cust.controller;
 
 import com.cust.Entity.User;
+import com.cust.Utils.BaiduUtils;
 import com.cust.Utils.Token;
 import com.cust.Utils.WxUtils;
 import com.cust.service.UserService;
@@ -134,6 +135,14 @@ public class UserController {
             reqMap.put("status", "0");
             return reqMap;
         }
-        return null;
+        System.out.println("redis not found");
+        reqMap.put("status","-1");
+        return reqMap;
+    }
+
+    @RequestMapping("/test")
+    public void test(){
+        String path="D:\\3Dmax作业\\123.png";
+        BaiduUtils.checkPornograp(path);
     }
 }

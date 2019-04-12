@@ -8,6 +8,7 @@ import java.net.URLConnection;
 
 public class HttpUtil {
     /**
+     * 微信登陆
      * 向指定URL发送GET方法的请求
      *
      * @param url   发送请求的URL
@@ -60,4 +61,7 @@ public class HttpUtil {
         }
         return result;
     }
+
+
+
 }
