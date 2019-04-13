@@ -1,24 +1,35 @@
 package com.cust.controller;
 
 import com.cust.Utils.BaiduUtils;
+import com.cust.service.UserService;
 import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.RequestContext;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/fileCtrl")
 public class FileManageController {
 
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
+    @Autowired
+    private UserService userService;
 
     @RequestMapping("/upPicture")
     public void upPicture(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
@@ -51,7 +62,7 @@ public class FileManageController {
                 //非文本信息即文件
                 if (!item.isFormField()) {
                     picture=item;
-                    //色情、政治检测
+
 
                 }
             }
@@ -71,10 +82,50 @@ public class FileManageController {
             }
             in.close();
             out.close();
-            boolean uploadpermission=BaiduUtils.checkPornograp(destPath);//图片检测
+            boolean uploadpermission=BaiduUtils.checkPornograp(destPath);//图片检测//色情、政治检测
             PrintWriter outt=response.getWriter();
             if (uploadpermission){
-                outt.write(1);
+                //图片审核通过
+                if (request.getParameter("photoId")!=null){
+                    //相册第一次保存
+                String introduce=request.getParameter("introduce");
+                String userid= (String) redisTemplate.opsForValue().get("thirdSessionKey");
+                Map<String,String> saveMap=new HashMap<>();
+                saveMap.put("photoId",UUID.randomUUID().toString());
+                saveMap.put("ownerId",userid);
+                saveMap.put("instruction",introduce);
+                if (request.getParameter("location")!=null){
+                    saveMap.put("location",request.getParameter("location"));
+                }
+                     saveMap.put("photoURL",pictureName);//图片url
+                    boolean isSave=userService.firstSave(saveMap);
+                    if (isSave) {
+                        Map<String,String> respMap=new HashMap<>();
+                        respMap.put("photoId",saveMap.get("photoId"));
+                        String json = new JSONObject(respMap).toString();
+                        outt.write(json);
+                    }else {
+                        outt.write(-1);//保存错误
+                    }
+
+                }else {
+                    //同一相册继续加载
+                    Map<String,String> saveMap=new HashMap<>();
+                    saveMap.put("photoId", request.getParameter("photoId"));
+                    saveMap.put("photoURL",","+pictureName);//图片url
+                    //更新相册信息
+                    boolean isUpdata=userService.nextSave(saveMap);
+                    if (isUpdata){
+                        Map<String,String> respMap=new HashMap<>();
+                        respMap.put("photoId",saveMap.get("photoId"));
+                        String json = new JSONObject(respMap).toString();
+                        outt.write(json);
+                    }else {
+                        outt.write(-1);//保存错误
+                    }
+
+                }
+                //保存结束
             }else {
                 File file2=new File(destPath);
                 if(file.exists()&&file.isFile())
