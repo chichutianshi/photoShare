@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 
+import static com.baidu.aip.imagecensor.EImgType.FILE;
+
 public class BaiduUtils {
     //设置APPID/AK/SK
     private static final String APP_ID = "16007168";
@@ -15,9 +17,10 @@ public class BaiduUtils {
     static AipImageCensor client=new AipImageCensor(APP_ID, API_KEY, SECRET_KEY);
 
     public static boolean checkPornograp(String path) {
-        JSONObject res = client.antiPorn(path);
+        JSONObject res = client.imageCensorUserDefined(path,FILE, null);
         System.out.println(res.get("conclusion"));
-        if ("色情"==res.get("conclusion")){
+        //System.out.println(res.toString(2));
+        if ("不合规"==res.get("conclusion")){
             return false;
         }else
             return true;
