@@ -107,12 +107,6 @@
       <version>1.45</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.liferay/org.apache.commons.fileupload -->
-    <dependency>
-      <groupId>com.liferay</groupId>
-      <artifactId>org.apache.commons.fileupload</artifactId>
-      <version>1.2.2.LIFERAY-PATCHED-1</version>
-    </dependency>
 
 
   </dependencies>
