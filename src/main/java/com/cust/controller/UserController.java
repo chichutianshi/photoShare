@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -141,7 +143,7 @@ public class UserController {
     }
 
     @RequestMapping("/test")
-    public void test(){
+    public void test() {
         String path="D:\\3Dmax作业\\维尼熊.png";
         String path2="D:\\3Dmax作业\\色情.png";
         String path3="D:\\3Dmax作业\\恶心.png";
