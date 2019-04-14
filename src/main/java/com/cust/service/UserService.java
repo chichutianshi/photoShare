@@ -37,10 +37,10 @@ public class UserService {
     }
 
     public boolean firstSave(Map<String, String> saveMap) {
-        return  allphotosMapper.firstInsert(saveMap)>0?true:false;
+        return allphotosMapper.firstInsert(saveMap) > 0 ? true : false;
     }
 
     public boolean nextSave(Map<String, String> saveMap) {
-        return  allphotosMapper.nextInsert(saveMap)>0?true:false;
+        return allphotosMapper.nextInsert(saveMap) > 0 ? true : false;
     }
 }

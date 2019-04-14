@@ -8,7 +8,6 @@ import org.apache.tomcat.util.http.fileupload.RequestContext;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,9 +33,9 @@ public class FileManageController {
     @RequestMapping("/upPicture")
     public void upPicture(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         //设置文件保存路径
-        String path="C:\\wxpicture\\";
-        File dir=new File(path);
-        if (!dir.exists()){
+        String path = "C:\\wxpicture\\";
+        File dir = new File(path);
+        if (!dir.exists()) {
             //路径不存在侧创建
             dir.mkdir();
         }
@@ -58,17 +57,15 @@ public class FileManageController {
         try {
             List<FileItem> list = upload.parseRequest((RequestContext) request);
             FileItem picture = null;
-            for (FileItem item:list){
+            for (FileItem item : list) {
                 //非文本信息即文件
                 if (!item.isFormField()) {
-                    picture=item;
-
-
+                    picture = item;
                 }
             }
 
-            String pictureName= UUID.randomUUID().toString();//保存的文件名
-            String destPath=path+pictureName;
+            String pictureName = UUID.randomUUID().toString()+".jpg";//保存的文件名
+            String destPath = path + pictureName;
             //真正写到磁盘上
             File file = new File(destPath);
             OutputStream out = new FileOutputStream(file);
@@ -82,57 +79,59 @@ public class FileManageController {
             }
             in.close();
             out.close();
-            boolean uploadpermission=BaiduUtils.checkPornograp(destPath);//图片检测//色情、政治检测
-            PrintWriter outt=response.getWriter();
-            if (uploadpermission){
+            boolean uploadPermission = BaiduUtils.checkPornograp(destPath);//图片检测//色情、政治检测
+            PrintWriter printWriter = response.getWriter();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            if (uploadPermission) {
                 //图片审核通过
-                if (request.getParameter("photoId")!=null){
+                if (request.getParameter("photoId") == null) {
                     //相册第一次保存
-                String introduce=request.getParameter("introduce");
-                String userid= (String) redisTemplate.opsForValue().get("thirdSessionKey");
-                Map<String,String> saveMap=new HashMap<>();
-                saveMap.put("photoId",UUID.randomUUID().toString());
-                saveMap.put("ownerId",userid);
-                saveMap.put("instruction",introduce);
-                if (request.getParameter("location")!=null){
-                    saveMap.put("location",request.getParameter("location"));
-                }
-                     saveMap.put("photoURL",pictureName);//图片url
-                    boolean isSave=userService.firstSave(saveMap);
+                    String introduce = request.getParameter("introduce");
+                    String userId = (String) redisTemplate.opsForValue().get(request.getParameter("thirdSessionKey"));
+                    Map<String, String> saveMap = new HashMap<>();
+                    saveMap.put("photoId", UUID.randomUUID().toString());
+                    saveMap.put("ownerId", userId);
+                    saveMap.put("instruction", introduce);
+                    if (request.getParameter("location") != null) {
+                        saveMap.put("location", request.getParameter("location"));
+                    }
+                    saveMap.put("photoURL", pictureName);//图片url
+                    boolean isSave = userService.firstSave(saveMap);
                     if (isSave) {
-                        Map<String,String> respMap=new HashMap<>();
-                        respMap.put("photoId",saveMap.get("photoId"));
+                        Map<String, String> respMap = new HashMap<>();
+                        respMap.put("photoId", saveMap.get("photoId"));
                         String json = new JSONObject(respMap).toString();
-                        outt.write(json);
-                    }else {
-                        outt.write(-1);//保存错误
+                        printWriter.write(json);
+                    } else {
+                        printWriter.write(-1);//保存错误
                     }
-
-                }else {
+                    printWriter.flush();
+                } else {
                     //同一相册继续加载
-                    Map<String,String> saveMap=new HashMap<>();
+                    Map<String, String> saveMap = new HashMap<>();
                     saveMap.put("photoId", request.getParameter("photoId"));
-                    saveMap.put("photoURL",","+pictureName);//图片url
+                    saveMap.put("photoURL", "," + pictureName);//图片url
                     //更新相册信息
-                    boolean isUpdata=userService.nextSave(saveMap);
-                    if (isUpdata){
-                        Map<String,String> respMap=new HashMap<>();
-                        respMap.put("photoId",saveMap.get("photoId"));
+                    boolean isUpdate = userService.nextSave(saveMap);
+                    if (isUpdate) {
+                        Map<String, String> respMap = new HashMap<>();
+                        respMap.put("photoId", saveMap.get("photoId"));
                         String json = new JSONObject(respMap).toString();
-                        outt.write(json);
-                    }else {
-                        outt.write(-1);//保存错误
+                        printWriter.write(json);
+                    } else {
+                        printWriter.write(-1);//保存错误
                     }
-
+                    printWriter.flush();
                 }
                 //保存结束
-            }else {
-                File file2=new File(destPath);
-                if(file.exists()&&file.isFile())
-                    file.delete();//删除图片
-                outt.write(-1);
+            } else {
+                File file2 = new File(destPath);
+                if (file2.exists() && file2.isFile())
+                    file2.delete();//删除图片
+                printWriter.write(-1);
+                printWriter.flush();
             }
-
         } catch (FileUploadException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -140,7 +139,5 @@ public class FileManageController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
