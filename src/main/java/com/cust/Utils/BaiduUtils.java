@@ -20,7 +20,7 @@ public class BaiduUtils {
         JSONObject res = client.imageCensorUserDefined(path,FILE, null);
         System.out.println(res.get("conclusion"));
         //System.out.println(res.toString(2));
-        if ("不合规"==res.get("conclusion")){
+        if ("不合规".equals(res.get("conclusion"))){
             return false;
         }else
             return true;

@@ -37,7 +37,9 @@ public class UserService {
     }
 
     public boolean firstSave(Map<String, String> saveMap) {
-        return allphotosMapper.firstInsert(saveMap) > 0 ? true : false;
+        int i=allphotosMapper.firstInsert(saveMap);
+        //System.out.println(i);
+        return i > 0 ? true : false;
     }
 
     public boolean nextSave(Map<String, String> saveMap) {
