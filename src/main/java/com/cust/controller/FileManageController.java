@@ -47,12 +47,12 @@ public class FileManageController {
                 boolean uploadPermission = BaiduUtils.checkPornograp(destPath);//图片检测//色情、政治检测
                 if (uploadPermission) {
                     //图片审核通过
-                    if (multipartHttpServletRequest.getParameter("photoId") == null) {
+                    if (multipartHttpServletRequest.getParameter("photoId").equals("")) {
                         //相册第一次保存
                         String introduce = multipartHttpServletRequest.getParameter("introduce");
-                        System.out.println(introduce);
+//                        System.out.println(introduce);
                         String userId = (String) redisTemplate.opsForValue().get(multipartHttpServletRequest.getParameter("thirdSessionKey"));
-                        System.out.println(userId);
+//                        System.out.println(userId);
                         Map<String, String> saveMap = new HashMap<>();
                         saveMap.put("photoId", UUID.randomUUID().toString());
                         saveMap.put("ownerId", userId);
@@ -73,9 +73,9 @@ public class FileManageController {
                     } else {
                         //同一相册继续加载
                         Map<String, String> saveMap = new HashMap<>();
-                        System.out.println("photoId:"+multipartHttpServletRequest.getParameter("photoId"));
+                        System.out.println("photoId:" + multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoId", multipartHttpServletRequest.getParameter("photoId"));
-                        saveMap.put("photoURL", "," + pictureName);//图片url
+                        saveMap.put("photoURL", ","+pictureName);//图片url
                         //更新相册信息
                         boolean isUpdate = userService.nextSave(saveMap);
                         if (isUpdate) {

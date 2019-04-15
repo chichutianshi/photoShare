@@ -15,7 +15,7 @@ public interface AllphotosMapper {
             " values(#{photoId},#{ownerId},#{instruction},#{location},#{photoURL})")
     int firstInsert(Map record);
 
-    @Update("update allphotos set photoURL=photoURL+#{photoURL} where photoId=#{photoId}")
+    @Update("update allphotos set photoURL=CONCAT(photoURL,#{photoURL}) where photoId=#{photoId}")
     int nextInsert(Map record);
 
     int insertSelective(Allphotos record);
