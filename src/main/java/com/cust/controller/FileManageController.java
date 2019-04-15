@@ -47,11 +47,12 @@ public class FileManageController {
                 boolean uploadPermission = BaiduUtils.checkPornograp(destPath);//图片检测//色情、政治检测
                 if (uploadPermission) {
                     //图片审核通过
-                    if (multipartHttpServletRequest.getParameter("photoId") == null) {
-                        System.out.println("第一次保存");
+                    if (multipartHttpServletRequest.getParameter("photoId").equals("")) {
                         //相册第一次保存
                         String introduce = multipartHttpServletRequest.getParameter("introduce");
+//                        System.out.println(introduce);
                         String userId = (String) redisTemplate.opsForValue().get(multipartHttpServletRequest.getParameter("thirdSessionKey"));
+//                        System.out.println(userId);
                         Map<String, String> saveMap = new HashMap<>();
                         saveMap.put("photoId", UUID.randomUUID().toString());
                         saveMap.put("ownerId", userId);
@@ -63,23 +64,20 @@ public class FileManageController {
                         boolean isSave = userService.firstSave(saveMap);
                         if (isSave) {
                             respMap.put("photoId", saveMap.get("photoId"));
-                            //System.out.println(respMap);
+                            System.out.println(respMap);
                             return respMap;
                         } else {
                             respMap.put("status", "-1");
                             return respMap;
                         }
                     } else {
-                        System.out.println("第二次保存");
                         //同一相册继续加载
-                        Map<String, String> saveMap2 = new HashMap<>();
-                        System.out.println("photoId:"+request.getParameter("photoId"));
-                        saveMap2.put("photoId", request.getParameter("photoId"));
-                        saveMap2.put("photoURL", ',' + pictureName);//图片url
+                        Map<String, String> saveMap = new HashMap<>();
+                        System.out.println("photoId:" + multipartHttpServletRequest.getParameter("photoId"));
+                        saveMap.put("photoId", multipartHttpServletRequest.getParameter("photoId"));
+                        saveMap.put("photoURL", ","+pictureName);//图片url
                         //更新相册信息
-                        System.out.println(saveMap2);
-                        boolean isUpdate = userService.nextSave(saveMap2);
-                        System.out.println("next保存："+isUpdate);
+                        boolean isUpdate = userService.nextSave(saveMap);
                         if (isUpdate) {
                             respMap.put("status", "1");
                             return respMap;
