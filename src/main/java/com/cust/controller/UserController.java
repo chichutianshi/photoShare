@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class UserController {
@@ -102,8 +103,8 @@ public class UserController {
                     redisTemplate.delete(redisTemplate.opsForValue().get(key));
                     redisTemplate.delete(key);
                 }
-                redisTemplate.opsForValue().set(openid, repMap.get("thirdSessionKey"));
-                redisTemplate.opsForValue().set(repMap.get("thirdSessionKey"), repMap.get("id"));
+                redisTemplate.opsForValue().set(openid, repMap.get("thirdSessionKey"),7, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(repMap.get("thirdSessionKey"), repMap.get("id"),7, TimeUnit.DAYS);
                 //登陆成功
                 repMap.remove("id");
                 repMap.put("status", "0");

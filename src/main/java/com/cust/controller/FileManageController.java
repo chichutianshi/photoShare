@@ -73,7 +73,7 @@ public class FileManageController {
                     } else {
                         //同一相册继续加载
                         Map<String, String> saveMap = new HashMap<>();
-                        System.out.println("photoId:" + multipartHttpServletRequest.getParameter("photoId"));
+                        System.out.println("返回photoId:" + multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoId", multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoURL", ","+pictureName);//图片url
                         //更新相册信息
