@@ -37,6 +37,7 @@ public class BaiduUtils {
             System.out.println("合格");
             return allow;
         }
+        System.out.println(res.toString(2));
         JSONArray jsonDwa = (JSONArray) JSONArray.parseObject(String.valueOf(res)).get("data");//提出data 转换为数组
         //System.out.println(jsonDwa);
         if (jsonDwa!=null){
@@ -50,7 +51,7 @@ public class BaiduUtils {
                 com.alibaba.fastjson.JSONObject jsonDeal = (com.alibaba.fastjson.JSONObject) jsonDwa.get(i);
                 if (jsonDeal.get("msg").toString().contains("色情")){
                     System.out.println("色情可能性："+jsonDeal.get("probability"));
-                    if (Double.parseDouble(jsonDeal.get("probability").toString())>(double) 0.88){
+                    if (Double.parseDouble(jsonDeal.get("probability").toString())>(double) 0.66){
                         sq=false;
                     }
                 }else if (jsonDeal.get("msg").toString().contains("政治")){
@@ -88,7 +89,7 @@ public class BaiduUtils {
 
 
 
-        System.out.println(res.toString(2));
+
         //System.out.println(allow);
         if (allow) System.out.println("合格");
             return allow;
