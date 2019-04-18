@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -53,6 +55,7 @@ public class FileManageController {
 //                        System.out.println(introduce);
                         String userId = (String) redisTemplate.opsForValue().get(multipartHttpServletRequest.getParameter("thirdSessionKey"));
 //                        System.out.println(userId);
+                        String categories = multipartHttpServletRequest.getParameter("categories");
                         Map<String, String> saveMap = new HashMap<>();
                         saveMap.put("photoId", UUID.randomUUID().toString());
                         saveMap.put("ownerId", userId);
@@ -61,6 +64,8 @@ public class FileManageController {
                             saveMap.put("location", request.getParameter("location"));
                         }
                         saveMap.put("photoURL", pictureName);//图片url
+                        saveMap.put("createTime", (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+                        saveMap.put("categories", categories);
                         boolean isSave = userService.firstSave(saveMap);
                         if (isSave) {
                             respMap.put("photoId", saveMap.get("photoId"));
@@ -75,7 +80,7 @@ public class FileManageController {
                         Map<String, String> saveMap = new HashMap<>();
                         System.out.println("返回photoId:" + multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoId", multipartHttpServletRequest.getParameter("photoId"));
-                        saveMap.put("photoURL", ","+pictureName);//图片url
+                        saveMap.put("photoURL", "," + pictureName);//图片url
                         //更新相册信息
                         boolean isUpdate = userService.nextSave(saveMap);
                         if (isUpdate) {

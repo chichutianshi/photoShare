@@ -13,6 +13,27 @@ public class Allphotos {
 
     private Integer likenum;
 
+    private String createTime;
+
+
+    private String categories;
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getCategories() {
+        return categories;
+    }
+
+    public void setCategories(String categories) {
+        this.categories = categories;
+    }
+
     public String getPhotoid() {
         return photoid;
     }
