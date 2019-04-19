@@ -142,17 +142,4 @@ public class UserController {
         reqMap.put("status","-1");
         return reqMap;
     }
-
-    @RequestMapping("/test")
-    public void test() {
-        String path="D:\\3Dmax作业\\维尼熊.png";
-        String path2="D:\\3Dmax作业\\色情.png";
-        String path3="D:\\3Dmax作业\\恶心.png";
-        String path4="D:\\3Dmax作业\\暴力.png";
-
-        BaiduUtils.checkPornograp(path);
-        BaiduUtils.checkPornograp(path2);
-        BaiduUtils.checkPornograp(path3);
-        BaiduUtils.checkPornograp(path4);
-    }
 }
