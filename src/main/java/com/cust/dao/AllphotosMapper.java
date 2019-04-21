@@ -19,6 +19,6 @@ public interface AllphotosMapper {
     @Update("update allphotos set photoURL=CONCAT(photoURL,#{photoURL}) where photoId=#{photoId}")
     int nextInsert(Map record);
 
-    @Select("select * from allphotos order by likeNum DESC,createTime DESC")
-    List<Allphotos> randomSelect();
+    @Select("select allphotos.*,user.avatarURL,user.nickname from allphotos left join user on user.id=allphotos.ownerId order by allphotos.likeNum desc,allphotos.createTime desc LIMIT #{selectRow},14")
+    List<Map> randomSelect(int selectRow);
 }

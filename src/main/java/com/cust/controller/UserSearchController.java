@@ -3,12 +3,14 @@ package com.cust.controller;
 
 import com.cust.service.UserSearchService;
 import easy.web.RequestTool;
+import org.bouncycastle.util.test.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,16 +20,17 @@ public class UserSearchController {
     private UserSearchService userSearchService;
 
     @RequestMapping("/loadPhotos")
-    public List showPhotos(HttpServletRequest httpServletRequest) {
+    public List<Map> showPhotos(HttpServletRequest httpServletRequest) {
         Map reqMap = RequestTool.getParameterMap(httpServletRequest);
+        String thirdSessionKey = (String) reqMap.get("thirdSessionKey");
         //如果reqMap中含有thirdSessionKey进行个性化推荐显示
-        if (reqMap.get("thirdSessionKey") != "") {
-
+        System.out.println(thirdSessionKey);
+        if (thirdSessionKey.equals("")) {
+            return userSearchService.selectAllPhotos(Integer.valueOf((String)(reqMap.get("selectRow"))));
         } else {
-            return userSearchService.selectAllPhotos();
+            System.out.println("asd");
         }
         return null;
     }
-
 
 }
