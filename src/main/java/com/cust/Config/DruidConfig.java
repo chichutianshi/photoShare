@@ -34,7 +34,6 @@ public class DruidConfig {
         initParams.put("loginUsername", "admin");
         initParams.put("loginPassword", "123456");
         initParams.put("allow", ""); //默认允许所有
-        initParams.put("deny", "192.168.1.119");
         bean.setInitParameters(initParams);
         return bean;
     }
@@ -51,16 +50,6 @@ public class DruidConfig {
         bean.setInitParameters(initParams);
         bean.setUrlPatterns(Arrays.asList("/*"));
         return bean;
-    }
-
-    @Bean
-    public CacheManager cacheManager(RedisTemplate redisTemplate) {
-        RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
-        cacheManager.setDefaultExpiration(60);
-        Map<String, Long> expiresMap = new HashMap<>();
-        expiresMap.put("Product", 5L);
-        cacheManager.setExpires(expiresMap);
-        return cacheManager;
     }
 
 }
