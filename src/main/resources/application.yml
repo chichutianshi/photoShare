@@ -22,6 +22,7 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
+
   http:
    multipart:
      max-file-size: 10MB
@@ -37,6 +38,11 @@ spring:
 logging:
   level:
    com.cust.dao: debug
+   org.springframework.web: info
+
+mybatis:
+  mapper-locations: classpath:mybatis/*.xml
+
 
 
 

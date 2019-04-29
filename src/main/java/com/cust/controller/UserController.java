@@ -142,4 +142,11 @@ public class UserController {
         reqMap.put("status","-1");
         return reqMap;
     }
+
+    @RequestMapping("/tt")
+    public String test()
+    {
+        String s= (String) redisTemplate.opsForValue().get("oJnM75CLPRGIuOc3jvLS1ZP3RHt8");
+        return s;
+    }
 }

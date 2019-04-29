@@ -10,7 +10,7 @@ import java.rmi.server.ExportException;
 
 @SpringBootApplication
 @MapperScan("com.cust.dao")
-public class startapplication  extends  SpringBootServletInitializer{
+public class startapplication extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication.run(startapplication.class, args);
     }

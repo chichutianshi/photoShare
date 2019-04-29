@@ -16,10 +16,14 @@ public class UserSearchService {
 
     public List<Map> selectAllPhotos(int selectRow) {
         List<Map> list = allphotosMapper.randomSelect(selectRow);
+        String photoURL;
+        String[] URL;
         if (list != null) {
             System.out.println(list);
             for (Map aList : list) {
-                aList.put("show", "false");
+                photoURL = (String) aList.get("photoURL");
+                URL = photoURL.split(";");
+                aList.put("photoURL", URL[0]);
             }
             return list;
         }
