@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -138,15 +139,8 @@ public class UserController {
             reqMap.put("status", "0");
             return reqMap;
         }
-        System.out.println("redis not found");
+        //System.out.println("redis not found");
         reqMap.put("status","-1");
         return reqMap;
-    }
-
-    @RequestMapping("/tt")
-    public String test()
-    {
-        String s= (String) redisTemplate.opsForValue().get("oJnM75CLPRGIuOc3jvLS1ZP3RHt8");
-        return s;
     }
 }
