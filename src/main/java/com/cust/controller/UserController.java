@@ -155,8 +155,10 @@ public class UserController {
         String photoId = (String) map.get("photoId");
         System.out.println(photoId);
         //获取到对应相册的所有图片
-        String photoUrl = (String) redisTemplate.opsForValue().get(photoId);
-        if (photoUrl != null) {
+        Object pUrl = redisTemplate.opsForValue().get(photoId);
+        String photoUrl ;
+        if ( pUrl!= null) {
+            photoUrl = (String) pUrl;
             String[] photoUrls = photoUrl.split(";");
             reqMap.put("photoUrls", photoUrls);
         } else {
