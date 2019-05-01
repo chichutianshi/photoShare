@@ -23,7 +23,7 @@ public class UserSearchService {
             for (Map aList : list) {
                 photoURL = (String) aList.get("photoURL");
                 URL = photoURL.split(";");
-                aList.put("photoURL", "http://localhost:8080/asd/"+URL[0]);
+                aList.put("photoURL", "http://localhost:8080/asd/"+aList.get("photoId")+"/"+"compress/"+URL[0]);
             }
             return list;
         }

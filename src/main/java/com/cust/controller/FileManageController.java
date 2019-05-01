@@ -2,6 +2,7 @@ package com.cust.controller;
 
 import com.cust.Utils.BaiduUtils;
 import com.cust.service.UserService;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +31,8 @@ public class FileManageController {
     public Map upPicture(HttpServletRequest request) {
         Map<String, String> respMap = new HashMap<>();
         //设置文件保存路径
-        String path = "C:\\wxpicture\\";
-        File dir = new File(path);
+        String checkpath = "C:\\wxpicture\\check\\";//审核路径
+        File dir = new File(checkpath);
         if (!dir.exists()) {
             //路径不存在侧创建
             dir.mkdir();
@@ -41,7 +42,7 @@ public class FileManageController {
         if (!file.isEmpty()) {
             try {
                 String pictureName = UUID.randomUUID().toString() + ".jpg";//保存的文件名
-                String destPath = path + pictureName;
+                String destPath = checkpath + pictureName;
                 byte[] bytes = file.getBytes();
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(new File(destPath)));
                 bufferedOutputStream.write(bytes);
@@ -58,6 +59,28 @@ public class FileManageController {
                         String categories = multipartHttpServletRequest.getParameter("categories");
                         Map<String, String> saveMap = new HashMap<>();
                         saveMap.put("photoId", UUID.randomUUID().toString());
+                        //写入硬盘start
+                        String savePath="C:\\wxpicture\\"+saveMap.get("photoId");
+                        File saveFile=new File(savePath);
+                        if (!saveFile.exists()){
+                            //路径不存在侧创建
+                            saveFile.mkdir();//创建相册文件夹
+                        }
+                        String filePath=savePath+"\\"+pictureName;
+                        BufferedOutputStream outTOdesk = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+                        outTOdesk.write(bytes);//写入
+                        bufferedOutputStream.close();
+                        //压缩
+                        File compressFile=new File(savePath+"\\compress");
+                        if (!compressFile.exists()){
+                            compressFile.mkdir();
+                        }
+                        System.out.println("图片："+filePath);
+                        Thumbnails.of(filePath)
+                                .scale(1f)
+                                .outputQuality(0.5f)
+                                .toFile(compressFile+"\\"+pictureName);
+                        //end
                         saveMap.put("ownerId", userId);
                         saveMap.put("instruction", introduce);
                         if (request.getParameter("location") != null) {
@@ -68,10 +91,16 @@ public class FileManageController {
                         saveMap.put("categories", categories);
                         boolean isSave = userService.firstSave(saveMap);
                         if (isSave) {
+                            File file2 = new File(destPath);//审核路径
+                            if (file2.exists() && file2.isFile())
+                                file2.delete();//删除图片
                             respMap.put("photoId", saveMap.get("photoId"));
                             System.out.println(respMap);
                             return respMap;
                         } else {
+                            File file2 = new File(destPath);//审核路径
+                            if (file2.exists() && file2.isFile())
+                                file2.delete();//删除图片
                             respMap.put("status", "-1");
                             return respMap;
                         }
@@ -81,12 +110,42 @@ public class FileManageController {
                         System.out.println("返回photoId:" + multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoId", multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoURL", ";" + pictureName);//图片url
+                        //写入硬盘start
+                        String savePath="C:\\wxpicture\\"+saveMap.get("photoId");
+                        File saveFile=new File(savePath);
+                        if (!saveFile.exists()){
+                            //路径不存在侧创建
+                            saveFile.mkdir();//创建相册文件夹
+                        }
+                        String filePath=savePath+"\\"+pictureName;
+                        BufferedOutputStream outTOdesk = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+                        outTOdesk.write(bytes);//写入
+                        bufferedOutputStream.close();
+                        //压缩
+                        File compressFile=new File(savePath+"\\compress");
+                        if (!compressFile.exists()){
+                            compressFile.mkdir();
+                        }
+                        System.out.println("图片："+filePath);
+                        Thumbnails.of(filePath)
+                                .scale(1f)
+                                .outputQuality(0.5f)
+                                .toFile(compressFile+"\\"+pictureName);
+                        //end
+
+
                         //更新相册信息
                         boolean isUpdate = userService.nextSave(saveMap);
                         if (isUpdate) {
+                            File file2 = new File(destPath);//审核路径
+                            if (file2.exists() && file2.isFile())
+                                file2.delete();//删除图片
                             respMap.put("status", "1");
                             return respMap;
                         } else {
+                            File file2 = new File(destPath);//审核路径
+                            if (file2.exists() && file2.isFile())
+                                file2.delete();//删除图片
                             respMap.put("status", "-1");
                             return respMap;        //保存错误
                         }
@@ -94,7 +153,7 @@ public class FileManageController {
                     }
                     //保存结束
                 } else {
-                    File file2 = new File(destPath);
+                    File file2 = new File(destPath);//审核路径
                     if (file2.exists() && file2.isFile())
                         file2.delete();//删除图片
                     respMap.put("status", "-1");
