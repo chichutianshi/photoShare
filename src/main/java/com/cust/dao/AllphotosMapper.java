@@ -20,4 +20,6 @@ public interface AllphotosMapper {
 
 //    @Select("select allphotos.*,user.avatarURL,user.nickname from allphotos left join user on user.id=allphotos.ownerId order by allphotos.likeNum desc,allphotos.createTime desc LIMIT #{selectRow},14")
     List<Map> randomSelect(int selectRow);
+
+    String getPhotoUrlByphotoId(String photoId);
 }

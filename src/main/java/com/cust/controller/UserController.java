@@ -4,6 +4,7 @@ import com.cust.Entity.User;
 import com.cust.Utils.BaiduUtils;
 import com.cust.Utils.Token;
 import com.cust.Utils.WxUtils;
+import com.cust.service.UserSearchService;
 import com.cust.service.UserService;
 import easy.web.RequestTool;
 import org.json.simple.JSONObject;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +32,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
+    @Autowired
+    private UserSearchService userSearchService;
 
     /**
      * 获取前端code，此方法用于发送请求到auth.code2Session接口获取用户openid以及sessionkey
@@ -104,8 +108,8 @@ public class UserController {
                     redisTemplate.delete(redisTemplate.opsForValue().get(key));
                     redisTemplate.delete(key);
                 }
-                redisTemplate.opsForValue().set(openid, repMap.get("thirdSessionKey"),7, TimeUnit.DAYS);
-                redisTemplate.opsForValue().set(repMap.get("thirdSessionKey"), repMap.get("id"),7, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(openid, repMap.get("thirdSessionKey"), 7, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(repMap.get("thirdSessionKey"), repMap.get("id"), 7, TimeUnit.DAYS);
                 //登陆成功
                 repMap.remove("id");
                 repMap.put("status", "0");
@@ -140,7 +144,27 @@ public class UserController {
             return reqMap;
         }
         //System.out.println("redis not found");
-        reqMap.put("status","-1");
+        reqMap.put("status", "-1");
+        return reqMap;
+    }
+
+    @RequestMapping("/GetPhotoDetail")
+    public Map photoDetail(HttpServletRequest request) {
+        Map map = RequestTool.getParameterMap(request);
+        Map reqMap = new HashMap();
+        String photoId = (String) map.get("photoId");
+        System.out.println(photoId);
+        //获取到对应相册的所有图片
+        String photoUrl = (String) redisTemplate.opsForValue().get(photoId);
+        if (photoUrl != null) {
+            String[] photoUrls = photoUrl.split(";");
+            reqMap.put("photoUrls", photoUrls);
+        } else {
+            photoUrl = userSearchService.getPhotoUrl(photoId);
+            redisTemplate.opsForValue().set(photoId, photoUrl, 1, TimeUnit.DAYS);
+            String[] photoUrls = photoUrl.split(";");
+            reqMap.put("photoUrls", photoUrls);
+        }
         return reqMap;
     }
 }

@@ -13,5 +13,8 @@
     <insert id="firstInsert">
         insert into allphotos(photoId,ownerId,instruction,location,photoURL,createTime,categories)values(#{photoId},#{ownerId},#{instruction},#{location},#{photoURL},#{createTime},#{categories})
     </insert>
-
+    
+    <select id="getPhotoUrlByphotoId" resultType="String">
+        select photoURL from allphotos where photoId=#{photoId}
+    </select>
 </mapper>

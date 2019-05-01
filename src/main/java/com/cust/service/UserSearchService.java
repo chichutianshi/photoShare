@@ -5,6 +5,7 @@ import com.cust.dao.AllphotosMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Map;
 
@@ -23,11 +24,16 @@ public class UserSearchService {
             for (Map aList : list) {
                 photoURL = (String) aList.get("photoURL");
                 URL = photoURL.split(";");
-                aList.put("photoURL", "http://localhost:8080/asd/"+URL[0]);
+                aList.put("photoURL", "http://localhost:8080/asd/" + URL[0]);
             }
             return list;
         }
         System.out.println("空");
         return null;
+    }
+
+    public String getPhotoUrl(String photoId) {
+        String photoUrl = allphotosMapper.getPhotoUrlByphotoId(photoId);
+        return photoUrl;
     }
 }
