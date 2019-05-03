@@ -22,4 +22,10 @@ public interface AllphotosMapper {
     List<Map> randomSelect(int selectRow);
 
     String getPhotoUrlByphotoId(String photoId);
+
+    List<Map> getPicListByUserID(String userID);
+
+    int delPicById(String photoId);
+
+
 }

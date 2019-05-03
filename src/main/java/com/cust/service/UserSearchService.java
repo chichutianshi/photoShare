@@ -22,8 +22,8 @@ public class UserSearchService {
         if (list != null) {
             System.out.println(list);
             for (Map aList : list) {
-                photoURL = (String) aList.get("photoURL");
-                URL = photoURL.split(";");
+                photoURL = (String) aList.get("photoURL");//https://www.xqdiary.top
+                URL = photoURL.split(";");//http://localhost:8080/
                 aList.put("photoURL", "http://localhost:8080/asd/"+aList.get("photoId")+"/compress/" + URL[0]);
             }
             return list;
@@ -35,5 +35,14 @@ public class UserSearchService {
     public String getPhotoUrl(String photoId) {
         String photoUrl = allphotosMapper.getPhotoUrlByphotoId(photoId);
         return photoUrl;
+    }
+
+    public List getPicList(String userID) {
+        List list=allphotosMapper.getPicListByUserID(userID);
+        return list;
+    }
+
+    public boolean delPic(String photoId){
+        return allphotosMapper.delPicById(photoId)>0?true:false;
     }
 }

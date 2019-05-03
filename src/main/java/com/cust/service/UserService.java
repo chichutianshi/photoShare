@@ -45,4 +45,8 @@ public class UserService {
     public boolean nextSave(Map<String, String> saveMap) {
         return allphotosMapper.nextInsert(saveMap) > 0 ? true : false;
     }
+
+    public boolean changeNickName(Map userChange){
+        return userMapper.changeNickName(userChange)>0?true:false;
+    }
 }
