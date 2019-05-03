@@ -31,7 +31,8 @@ public class FileManageController {
     public Map upPicture(HttpServletRequest request) {
         Map<String, String> respMap = new HashMap<>();
         //设置文件保存路径
-        String checkpath = "C:\\wxpicture\\check\\";//审核路径
+        //String checkpath = "C:\\wxpicture\\check\\";//审核路径
+        String checkpath = "/home/wxpicture/check/";//审核路径
         File dir = new File(checkpath);
         if (!dir.exists()) {
             //路径不存在侧创建
@@ -60,18 +61,18 @@ public class FileManageController {
                         Map<String, String> saveMap = new HashMap<>();
                         saveMap.put("photoId", UUID.randomUUID().toString());
                         //写入硬盘start
-                        String savePath="C:\\wxpicture\\"+saveMap.get("photoId");
+                        String savePath="/home/wxpicture/"+saveMap.get("photoId");
                         File saveFile=new File(savePath);
                         if (!saveFile.exists()){
                             //路径不存在侧创建
                             saveFile.mkdir();//创建相册文件夹
                         }
-                        String filePath=savePath+"\\"+pictureName;
+                        String filePath=savePath+"/"+pictureName;
                         BufferedOutputStream outTOdesk = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
                         outTOdesk.write(bytes);//写入
                         bufferedOutputStream.close();
                         //压缩
-                        File compressFile=new File(savePath+"\\compress");
+                        File compressFile=new File(savePath+"/compress");
                         if (!compressFile.exists()){
                             compressFile.mkdir();
                         }
@@ -79,7 +80,7 @@ public class FileManageController {
                         Thumbnails.of(filePath)
                                 .scale(1f)
                                 .outputQuality(0.5f)
-                                .toFile(compressFile+"\\"+pictureName);
+                                .toFile(compressFile+"/"+pictureName);
                         //end
                         saveMap.put("ownerId", userId);
                         saveMap.put("instruction", introduce);
@@ -111,18 +112,18 @@ public class FileManageController {
                         saveMap.put("photoId", multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoURL", ";" + pictureName);//图片url
                         //写入硬盘start
-                        String savePath="C:\\wxpicture\\"+saveMap.get("photoId");
+                        String savePath="/home/wxpicture/"+saveMap.get("photoId");
                         File saveFile=new File(savePath);
                         if (!saveFile.exists()){
                             //路径不存在侧创建
                             saveFile.mkdir();//创建相册文件夹
                         }
-                        String filePath=savePath+"\\"+pictureName;
+                        String filePath=savePath+"/"+pictureName;
                         BufferedOutputStream outTOdesk = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
                         outTOdesk.write(bytes);//写入
                         bufferedOutputStream.close();
                         //压缩
-                        File compressFile=new File(savePath+"\\compress");
+                        File compressFile=new File(savePath+"/compress");
                         if (!compressFile.exists()){
                             compressFile.mkdir();
                         }
@@ -130,7 +131,7 @@ public class FileManageController {
                         Thumbnails.of(filePath)
                                 .scale(1f)
                                 .outputQuality(0.5f)
-                                .toFile(compressFile+"\\"+pictureName);
+                                .toFile(compressFile+"/"+pictureName);
                         //end
 
 
