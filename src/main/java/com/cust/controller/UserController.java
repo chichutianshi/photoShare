@@ -9,6 +9,7 @@ import com.cust.service.UserService;
 import easy.web.RequestTool;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -168,5 +166,59 @@ public class UserController {
             reqMap.put("photoUrls", photoUrls);
         }
         return reqMap;
+    }
+
+    /**
+     * 个人已发布管理
+     * return  photoId,instruction,location,photoURL,likeNum,createTime,categories
+     */
+    @RequestMapping("manageSend")
+    public List<Map> manageSend(HttpServletRequest request){
+        String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
+        String userID= (String) redisTemplate.opsForValue().get(thirdSessionKey);
+        List picList=userSearchService.getPicList(userID);
+        return picList;
+    }
+
+    /**
+     * 删除已发布的内容
+     *1 成功 -1失败
+     */
+    @RequestMapping("delSend")
+    public int delSend(HttpServletRequest request){
+        String picID=request.getParameter("photoId");
+        String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
+        String check= (String) redisTemplate.opsForValue().get("thirdSessionKey");
+        if (check==null){
+            return -1;
+        }
+        boolean i=userSearchService.delPic(picID);
+        if (i){
+            return 1;
+        }else {
+            return -1;
+        }
+    }
+
+    /**
+     * 修改个人昵称
+     * 1 成功 -1失败
+     */
+    @RequestMapping("changeNickName")
+    public int changeNickName(HttpServletRequest request){
+        Map userChange = new HashMap();
+        String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
+        String newnickname=request.getParameter("newnickname");
+        String userid= (String) redisTemplate.opsForValue().get(thirdSessionKey);
+        userChange.put("nickname", newnickname);
+        userChange.put("userid", userid);
+        if (userid!=null){
+            boolean change=userService.changeNickName(userChange);
+            if (change){
+                return 1;
+            }else return -1;
+        }else
+            System.out.println("redis null");
+            return -1;
     }
 }
