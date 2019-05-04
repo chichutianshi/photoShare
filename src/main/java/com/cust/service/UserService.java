@@ -20,8 +20,8 @@ public class UserService {
     @Autowired
     private AllphotosMapper allphotosMapper;
 
-//    @Autowired
-//    private RedisTemplate<Object, Object> redisTemplate;
+    @Autowired
+    RedisTemplate<Object, Object> redisTemplate;
 
     public String selectUserOpenId(String openid) {
         User userInfo = userMapper.selectUser(openid);
@@ -33,20 +33,31 @@ public class UserService {
     }
 
     public boolean insertUserInfo(User userInfo) {
-        return userMapper.insertUserInfo(userInfo) > 0 ? true : false;
+        return userMapper.insertUserInfo(userInfo) > 0;
     }
 
     public boolean firstSave(Map<String, String> saveMap) {
-        int i=allphotosMapper.firstInsert(saveMap);
+        int i = allphotosMapper.firstInsert(saveMap);
         //System.out.println(i);
-        return i > 0 ? true : false;
+        return i > 0;
     }
 
     public boolean nextSave(Map<String, String> saveMap) {
-        return allphotosMapper.nextInsert(saveMap) > 0 ? true : false;
+        return allphotosMapper.nextInsert(saveMap) > 0;
     }
 
-    public boolean changeNickName(Map userChange){
-        return userMapper.changeNickName(userChange)>0?true:false;
+    public boolean changeNickName(Map userChange) {
+        return userMapper.changeNickName(userChange) > 0;
+    }
+
+    public Map getPublisherInfo(String userId) {
+        Map userInfo = userMapper.selectUserByUserId(userId);
+        if (userInfo != null) {
+            if (!redisTemplate.hasKey(userId)) {
+                redisTemplate.opsForValue().set(userId, userInfo, 1, TimeUnit.DAYS);
+            }
+            return userInfo;
+        }
+        return null;
     }
 }

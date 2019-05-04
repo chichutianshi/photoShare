@@ -3,7 +3,7 @@ package com.cust.Entity;
 public class Photocomment {
     private String id;
 
-    private String photoid;
+    private String photoId;
 
     private String fromid;
 
@@ -24,11 +24,11 @@ public class Photocomment {
     }
 
     public String getPhotoid() {
-        return photoid;
+        return photoId;
     }
 
     public void setPhotoid(String photoid) {
-        this.photoid = photoid == null ? null : photoid.trim();
+        this.photoId = photoid == null ? null : photoid.trim();
     }
 
     public String getFromid() {
@@ -78,7 +78,7 @@ public class Photocomment {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", photoid=").append(photoid);
+        sb.append(", photoid=").append(photoId);
         sb.append(", fromid=").append(fromid);
         sb.append(", fromname=").append(fromname);
         sb.append(", fromurl=").append(fromurl);

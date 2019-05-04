@@ -188,7 +188,7 @@ public class UserController {
     public int delSend(HttpServletRequest request){
         String picID=request.getParameter("photoId");
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
-        String check= (String) redisTemplate.opsForValue().get("thirdSessionKey");
+        String check= (String) redisTemplate.opsForValue().get(thirdSessionKey);
         if (check==null){
             return -1;
         }
@@ -218,7 +218,7 @@ public class UserController {
                 return 1;
             }else return -1;
         }else
-            System.out.println("redis null");
+//            System.out.println("redis null");
             return -1;
     }
 }

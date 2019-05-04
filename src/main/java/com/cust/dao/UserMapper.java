@@ -16,4 +16,6 @@ public interface UserMapper {
     int insertUserInfo(User user);
 
     int changeNickName(Map userChange);
+
+    Map selectUserByUserId(String userId);
 }

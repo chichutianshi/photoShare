@@ -1,7 +1,9 @@
 package com.cust.dao;
 
 import com.cust.Entity.Commentreply;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CommentreplyMapper {
     int deleteByPrimaryKey(Integer id);
 
