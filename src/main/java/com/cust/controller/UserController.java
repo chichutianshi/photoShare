@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -192,8 +193,11 @@ public class UserController {
         if (check==null){
             return -1;
         }
-        boolean i=userSearchService.delPic(picID);
-        if (i){
+        boolean isDel=userSearchService.delPic(picID);
+        if (isDel){
+            File file=new File("/home/wxpicture/"+picID);
+            if (file.exists() && file.isDirectory())
+                file.delete();
             return 1;
         }else {
             return -1;
