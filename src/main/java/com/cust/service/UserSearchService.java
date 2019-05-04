@@ -24,7 +24,7 @@ public class UserSearchService {
             for (Map aList : list) {
                 photoURL = (String) aList.get("photoURL");//https://www.xqdiary.top
                 URL = photoURL.split(";");//http://localhost:8080/
-                aList.put("photoURL", "http://localhost:8080/asd/"+aList.get("photoId")+"/compress/" + URL[0]);
+                aList.put("photoURL", "http://localhost:8080/loadPic/"+aList.get("photoId")+"/compress/" + URL[0]);
             }
             return list;
         }
