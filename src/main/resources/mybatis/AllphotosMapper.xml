@@ -4,14 +4,21 @@
 <mapper namespace="com.cust.dao.AllphotosMapper">
 
     <select id="randomSelect" resultType="Map">
-        select allphotos.*,user.avatarURL,user.nickname from allphotos left join user on user.id=allphotos.ownerId order by allphotos.likeNum desc,allphotos.createTime desc LIMIT #{selectRow},14
+        select
+        allphotos.*,user.avatarURL,user.nickname
+        from allphotos
+        left join user
+        on user.id=allphotos.ownerId
+        order by allphotos.likeNum desc,allphotos.createTime desc
+        LIMIT #{selectRow},14
     </select>
     <update id="nextInsert">
         update allphotos set photoURL=CONCAT(photoURL,#{photoURL}) where photoId=#{photoId}
     </update>
     
     <insert id="firstInsert">
-        insert into allphotos(photoId,ownerId,instruction,location,photoURL,createTime,categories)values(#{photoId},#{ownerId},#{instruction},#{location},#{photoURL},#{createTime},#{categories})
+        insert into allphotos(photoId,ownerId,instruction,location,photoURL,createTime,categories)
+        values(#{photoId},#{ownerId},#{instruction},#{location},#{photoURL},#{createTime},#{categories})
     </insert>
     
     <select id="getPhotoUrlByphotoId" resultType="String">
@@ -19,7 +26,9 @@
     </select>
 
     <select id="getPicListByUserID" resultType="map">
-        select photoId,instruction,location,photoURL,likeNum,createTime,categories from allphotos where ownerId=#{userID}
+        select photoId,instruction,location,photoURL,likeNum,createTime,categories
+        from allphotos
+         where ownerId=#{userID}
     </select>
 
     <delete id="delPicById">

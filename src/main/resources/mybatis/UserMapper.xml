@@ -8,10 +8,17 @@
     </select>
 
     <insert id="insertUserInfo">
-        insert into user (id,nickname,gender,province,city,country,openid,avatarURL) values(#{id},#{nickname},#{gender},#{province},#{city},#{country},#{openid},#{avatarURL})
+        insert into user (id,nickname,gender,province,city,country,openid,avatarURL)
+        values(#{id},#{nickname},#{gender},#{province},#{city},#{country},#{openid},#{avatarURL})
     </insert>
 
     <update id="changeNickName">
         update user set nickname=#{nickname} where id=#{userid}
     </update>
+
+    <select id="selectUserByUserId" resultType="Map">
+        select nickname,avatarURL
+        from user
+        where id=#{userId}
+    </select>
 </mapper>

@@ -1,17 +1,15 @@
 package com.cust.dao;
 
 import com.cust.Entity.Photocomment;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Map;
+
+@Repository
 public interface PhotocommentMapper {
-    int deleteByPrimaryKey(String id);
 
-    int insert(Photocomment record);
+    List<Map> selectByPhotoId(String photoId);
 
-    int insertSelective(Photocomment record);
-
-    Photocomment selectByPrimaryKey(String id);
-
-    int updateByPrimaryKeySelective(Photocomment record);
-
-    int updateByPrimaryKey(Photocomment record);
+    int insertMainComment(Photocomment photocomment);
 }
