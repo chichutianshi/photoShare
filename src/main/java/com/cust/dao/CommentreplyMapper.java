@@ -3,17 +3,13 @@ package com.cust.dao;
 import com.cust.Entity.Commentreply;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Map;
+
 @Repository
 public interface CommentreplyMapper {
-    int deleteByPrimaryKey(Integer id);
 
-    int insert(Commentreply record);
+    int insertSonComment(Commentreply commentreply);
 
-    int insertSelective(Commentreply record);
-
-    Commentreply selectByPrimaryKey(Integer id);
-
-    int updateByPrimaryKeySelective(Commentreply record);
-
-    int updateByPrimaryKey(Commentreply record);
+    List<Map> selectSonComments(String commnetId);
 }

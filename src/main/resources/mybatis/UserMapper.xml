@@ -16,9 +16,4 @@
         update user set nickname=#{nickname} where id=#{userid}
     </update>
 
-    <select id="selectUserByUserId" resultType="Map">
-        select nickname,avatarURL
-        from user
-        where id=#{userId}
-    </select>
 </mapper>

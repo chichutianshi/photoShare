@@ -1,5 +1,6 @@
 package com.cust.controller;
 
+import com.cust.Entity.Commentreply;
 import com.cust.Entity.Photocomment;
 import com.cust.Utils.Token;
 import com.cust.service.UserCommentService;
@@ -14,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class UserCommentController {
@@ -26,8 +26,6 @@ public class UserCommentController {
     @Autowired
     UserCommentService userCommentService;
 
-    @Autowired
-    UserService userService;
 
     /**
      * 获取redis中缓存的主评论
@@ -65,6 +63,7 @@ public class UserCommentController {
 
     /**
      * 发布主评论
+     * 前端携带主评论photoId，thirdSessionKey,content,nickName,avatarUrl
      * 返回值：
      * 1：发布成功
      * -1：发布失败
@@ -84,25 +83,18 @@ public class UserCommentController {
         String photoId = request.getParameter("photoId");
 //        System.out.println(photoId);
 
+        String fromURL = request.getParameter("fromURL");
+        String fromname = request.getParameter("fromname");
+
         if (fromId == null) {
             return -2;
         }
-
-        Map userInfo = (Map) redisTemplate.opsForValue().get(fromId);
-
-        if (userInfo == null) {
-            userInfo = userService.getPublisherInfo(fromId);
-            if (userInfo == null) {
-                return -2;
-            }
-        }
-        System.out.println(userInfo);
         Photocomment photocomment = new Photocomment();
         photocomment.setContent(content);
         photocomment.setFromid(fromId);
         photocomment.setPhotoid(photoId);
-        photocomment.setFromname((String) userInfo.get("nickname"));
-        photocomment.setFromurl((String) userInfo.get("avatarURL"));
+        photocomment.setFromname(fromname);
+        photocomment.setFromurl(fromURL);
         photocomment.setId(Token.createNewUserId());
         photocomment.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         if (!userCommentService.publishMainComment(photocomment)) {
@@ -110,6 +102,79 @@ public class UserCommentController {
         }
         //同步redis中的评论
         redisTemplate.opsForList().rightPush(photoId, photocomment);
+        return 1;
+    }
+
+
+    /**e
+     * 获取子评论
+     * 前端携带主评论id
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/getSonComments")
+    public List getSonComments(HttpServletRequest request) {
+        String commentId = request.getParameter("commentId");
+        String commentIndex = String.valueOf(request.getParameter("commentIndex"));
+        if (Integer.valueOf(commentIndex) >= redisTemplate.opsForList().size(commentId) && Integer.valueOf(commentIndex) != 0) {
+            return new ArrayList();
+        }
+        List sonComments = redisTemplate.opsForList().range(commentId, Integer.valueOf(commentIndex), 10);
+        if (sonComments == null || sonComments.size() == 0) {
+            sonComments = userCommentService.getSonComment(commentId);
+        }
+        return sonComments;
+    }
+
+    /**
+     * 刷新子评论页面
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/refreshSonComments")
+    public List refreshSonComments(HttpServletRequest request) {
+        String commentId = request.getParameter("commentId");
+        List sonComments = userCommentService.getSonComment(commentId);
+        return sonComments;
+    }
+
+    /**
+     * 子评论发布
+     * 前端携带主评论commentId，thirdSessionKey,content,nickName,avatarUrl
+     * 返回值：
+     * 1：发布成功
+     * -1：发布失败
+     * -2：未登录，前端跳转到登陆界面
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/commentsReply")
+    public int commentsReply(HttpServletRequest request) {
+        String thirdSessionKey = request.getParameter("thirdSessionKey");
+        String fromId = (String) redisTemplate.opsForValue().get(thirdSessionKey);
+        String content = request.getParameter("content");
+        String commentId = request.getParameter("commentId");
+        String fromURL = request.getParameter("fromURL");
+        String fromname = request.getParameter("fromname");
+
+        if (fromId == null) {
+            return -2;
+        }
+        Commentreply commentreply = new Commentreply();
+        commentreply.setCommentid(commentId);
+        commentreply.setContent(content);
+        commentreply.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        commentreply.setFromid(fromId);
+        commentreply.setFromname(fromname);
+        commentreply.setFromurl(fromURL);
+
+        if (!userCommentService.publishSonComment(commentreply)) {
+            return -1;
+        }
+        redisTemplate.opsForList().rightPush(commentId, commentreply);
         return 1;
     }
 }
