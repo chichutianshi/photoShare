@@ -1,12 +1,9 @@
 package com.cust.Utils;
 
 import easy.security.MD5;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 import java.util.UUID;
 
-@Component
 public class Token {
 
     public final static String CreateToken() {
@@ -23,28 +20,32 @@ public class Token {
         return newId;
     }
 
-    public  boolean delete(String path){
-        File file = new File(path);
-        if(!file.exists()){
-            return false;
-        }
-        if(file.isFile()){
-            return file.delete();
-        }
-        File[] files = file.listFiles();
-        for (File f : files) {
-            if(f.isFile()){
-                if(!f.delete()){
-                    System.out.println(f.getAbsolutePath()+" delete error!");
-                    return false;
-                }
-            }else{
-                if(!this.delete(f.getAbsolutePath())){
-                    return false;
+    /**
+     * 迭代删除文件夹
+     * @param dirPath 文件夹路径
+     */
+    public static void deleteDir(File path) {
+        if (null != path) {
+            if (!path.exists())
+                return;
+            if (path.isFile()) {
+                boolean result = path.delete();
+                int tryCount = 0;
+                while (!result && tryCount++ < 10) {
+                    System.gc(); // 回收资源
+                    result = path.delete();
                 }
             }
+            File[] files = path.listFiles();
+            if (null != files) {
+                for (int i = 0; i < files.length; i++) {
+                    deleteDir(files[i]);
+                }
+            }
+            path.delete();
         }
-        return file.delete();
     }
+
+
 
 }
