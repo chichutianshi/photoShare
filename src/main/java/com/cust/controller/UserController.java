@@ -191,7 +191,7 @@ public class UserController {
            Map map= (Map) picList.get(k);
            String[] photoURLs=map.get("photoURL").toString().split(";");
            for (int i=0;i<photoURLs.length;i++){
-               photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+               photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/compress"+"/"+photoURLs[i];
            }
            Map temp=new HashMap();
            temp.put("photoId",map.get("photoId"));
