@@ -34,6 +34,9 @@ public class UserController {
     @Autowired
     private UserSearchService userSearchService;
 
+    @Autowired
+    private Token token;
+
     /**
      * 获取前端code，此方法用于发送请求到auth.code2Session接口获取用户openid以及sessionkey
      * map应包含昵称，国家，城市等微信基本用户信息
@@ -102,12 +105,12 @@ public class UserController {
                     }
                 }
                 //更新redis
-                String key = (String) redisTemplate.opsForValue().get("openid");
-                if (key != null) {
-                    redisTemplate.delete(redisTemplate.opsForValue().get(key));
-                    redisTemplate.delete(key);
-                }
-                redisTemplate.opsForValue().set(openid, repMap.get("thirdSessionKey"), 7, TimeUnit.DAYS);
+//                String key = (String) redisTemplate.opsForValue().get(openid);
+//                if (key != null) {
+//                    redisTemplate.delete(redisTemplate.opsForValue().get(key));
+//                    redisTemplate.delete(key);
+//                }
+                //redisTemplate.opsForValue().set(openid, repMap.get("thirdSessionKey"), 7, TimeUnit.DAYS);
                 redisTemplate.opsForValue().set(repMap.get("thirdSessionKey"), repMap.get("id"), 7, TimeUnit.DAYS);
                 //登陆成功
                 repMap.remove("id");
@@ -174,11 +177,36 @@ public class UserController {
      * return  photoId,instruction,location,photoURL,likeNum,createTime,categories
      */
     @RequestMapping("manageSend")
-    public List<Map> manageSend(HttpServletRequest request){
+    public List manageSend(HttpServletRequest request){
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
+
         String userID= (String) redisTemplate.opsForValue().get(thirdSessionKey);
+        if (userID==null){
+            List list=new ArrayList();
+            return null;
+        }
+
         List picList=userSearchService.getPicList(userID);
-        return picList;
+        List<Map> respList=new ArrayList<>();
+        for (int k=0;k<picList.size();k++){
+           Map map= (Map) picList.get(k);
+           String[] photoURLs=map.get("photoURL").toString().split(";");
+           for (int i=0;i<photoURLs.length;i++){
+               photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+           }
+           Map temp=new HashMap();
+           temp.put("photoId",map.get("photoId"));
+           temp.put("instruction",map.get("instruction"));
+           temp.put("location",map.get("location"));
+           temp.put("photoURL",photoURLs);
+           temp.put("likeNum",map.get("likeNum"));
+           temp.put("createTime",map.get("createTime"));
+           temp.put("categories",map.get("categories"));
+           temp.put("avatarURL",map.get("avatarURL"));
+           temp.put("nickname",map.get("nickname"));
+            respList.add(temp);
+        }
+        return respList;
     }
 
     /**
@@ -194,10 +222,16 @@ public class UserController {
             return -1;
         }
         boolean isDel=userSearchService.delPic(picID);
+
         if (isDel){
-            File file=new File("/home/wxpicture/"+picID);
-            if (file.exists() && file.isDirectory())
-                file.delete();
+            //File file=new File("/home/wxpicture/"+picID);
+            String tempPath="C:\\wxpicture\\"+picID;
+            File file=new File(tempPath);
+            if (file.exists()){
+                System.out.println("删除相册");
+                token.delete(tempPath);
+            }
+
             return 1;
         }else {
             return -1;
@@ -224,5 +258,21 @@ public class UserController {
         }else
 //            System.out.println("redis null");
             return -1;
+    }
+
+    /**
+     * 退出登陆
+     * 1 成功 -1失败
+     */
+    @RequestMapping("outLogin")
+    public int outLogin(HttpServletRequest request){
+        String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
+        redisTemplate.delete(thirdSessionKey);
+        if (!redisTemplate.hasKey(thirdSessionKey)){
+            return 1;//退出成功
+        }else {
+            return -1;
+        }
+
     }
 }

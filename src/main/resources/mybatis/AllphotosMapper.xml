@@ -26,9 +26,9 @@
     </select>
 
     <select id="getPicListByUserID" resultType="map">
-        select photoId,instruction,location,photoURL,likeNum,createTime,categories
-        from allphotos
-         where ownerId=#{userID}
+        select photoId,instruction,location,photoURL,likeNum,createTime,categories,user.avatarURL,user.nickname
+        from allphotos,user
+         where ownerId=#{userID} and user.id=#{userID}
     </select>
 
     <delete id="delPicById">
