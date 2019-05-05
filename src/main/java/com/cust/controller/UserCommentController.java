@@ -5,6 +5,7 @@ import com.cust.Entity.Photocomment;
 import com.cust.Utils.Token;
 import com.cust.service.UserCommentService;
 import com.cust.service.UserService;
+import easy.security.MD5;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,12 +36,14 @@ public class UserCommentController {
      */
     @RequestMapping("/getMainPhotoComment")
     public List getMainPhotoComment(HttpServletRequest request) {
+        MD5 m = new MD5();
         String photoId = String.valueOf(request.getParameter("photoId"));
+        String md5PhotoId = m.calcMD5(photoId);
         String commentIndex = String.valueOf(request.getParameter("commentIndex"));
-        if (Integer.valueOf(commentIndex) >= redisTemplate.opsForList().size(photoId) && Integer.valueOf(commentIndex) != 0) {
+        if (Integer.valueOf(commentIndex) >= redisTemplate.opsForList().size(md5PhotoId) && Integer.valueOf(commentIndex) != 0) {
             return new ArrayList();
         }
-        List mainComments = redisTemplate.opsForList().range(photoId, Integer.valueOf(commentIndex), 10);
+        List mainComments = redisTemplate.opsForList().range(md5PhotoId, Integer.valueOf(commentIndex), 10);
         if (mainComments == null || mainComments.size() == 0) {
             mainComments = userCommentService.getMainComment(photoId);
         }
@@ -74,6 +77,7 @@ public class UserCommentController {
      */
     @RequestMapping("/publishMainComment")
     public int publishMainComment(HttpServletRequest request) {
+        MD5 m = new MD5();
         String thirdSessionKey = request.getParameter("thirdSessionKey");
         //fromId:获取发布主评论人的userId
         String fromId = (String) redisTemplate.opsForValue().get(thirdSessionKey);
@@ -81,6 +85,8 @@ public class UserCommentController {
         String content = request.getParameter("content");
 //        System.out.println(content);
         String photoId = request.getParameter("photoId");
+        String md5PhotoId = m.calcMD5(photoId);
+
 //        System.out.println(photoId);
 
         String fromURL = request.getParameter("fromURL");
@@ -101,7 +107,7 @@ public class UserCommentController {
             return -1;
         }
         //同步redis中的评论
-        redisTemplate.opsForList().rightPush(photoId, photocomment);
+        redisTemplate.opsForList().rightPush(md5PhotoId, photocomment);
         return 1;
     }
 

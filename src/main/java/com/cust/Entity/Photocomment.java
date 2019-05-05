@@ -9,7 +9,7 @@ public class Photocomment {
 
     private String fromname;
 
-    private String fromurl;
+    private String fromURL;
 
     private String content;
 
@@ -48,11 +48,11 @@ public class Photocomment {
     }
 
     public String getFromurl() {
-        return fromurl;
+        return fromURL;
     }
 
     public void setFromurl(String fromurl) {
-        this.fromurl = fromurl == null ? null : fromurl.trim();
+        this.fromURL = fromurl == null ? null : fromurl.trim();
     }
 
     public String getContent() {
@@ -81,7 +81,7 @@ public class Photocomment {
         sb.append(", photoid=").append(photoId);
         sb.append(", fromid=").append(fromid);
         sb.append(", fromname=").append(fromname);
-        sb.append(", fromurl=").append(fromurl);
+        sb.append(", fromurl=").append(fromURL);
         sb.append(", content=").append(content);
         sb.append(", createtime=").append(createtime);
         sb.append("]");

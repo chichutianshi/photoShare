@@ -5,6 +5,7 @@ import com.cust.Entity.Photocomment;
 import com.cust.dao.CommentreplyMapper;
 import com.cust.dao.PhotocommentMapper;
 import com.cust.dao.UserMapper;
+import easy.security.MD5;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -26,16 +27,18 @@ public class UserCommentService {
     RedisTemplate<Object, Object> redisTemplate;
 
     public List<Map> getMainComment(String photoId) {
+        MD5 m = new MD5();
+        String md5PhotoId = m.calcMD5(photoId);
         List<Map> result = photocommentMapper.selectByPhotoId(photoId);
         if (result != null && result.size() != 0) {
-            if (redisTemplate.opsForList().size(photoId) < result.size()) {
-                if (redisTemplate.hasKey(photoId)) {
-                    redisTemplate.delete(photoId);
+            if (redisTemplate.opsForList().size(md5PhotoId) < result.size()) {
+                if (redisTemplate.hasKey(md5PhotoId)) {
+                    redisTemplate.delete(md5PhotoId);
                 }
                 for (Map comment : result) {
-                    redisTemplate.opsForList().rightPush(photoId, comment);
+                    redisTemplate.opsForList().rightPush(md5PhotoId, comment);
                 }
-                redisTemplate.expire(photoId, 1, TimeUnit.DAYS);
+                redisTemplate.expire(md5PhotoId, 1, TimeUnit.DAYS);
             }
 
         }
