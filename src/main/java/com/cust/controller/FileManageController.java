@@ -31,8 +31,8 @@ public class FileManageController {
     public Map upPicture(HttpServletRequest request) {
         Map<String, String> respMap = new HashMap<>();
         //设置文件保存路径
-        //String checkpath = "C:\\wxpicture\\check\\";//审核路径
-        String checkpath = "/home/wxpicture/check/";//审核路径
+        String checkpath = "C:\\wxpicture\\check\\";//审核路径
+        //String checkpath = "/home/wxpicture/check/";//审核路径
         File dir = new File(checkpath);
         if (!dir.exists()) {
             //路径不存在侧创建
@@ -61,7 +61,8 @@ public class FileManageController {
                         Map<String, String> saveMap = new HashMap<>();
                         saveMap.put("photoId", UUID.randomUUID().toString());
                         //写入硬盘start
-                        String savePath="/home/wxpicture/"+saveMap.get("photoId");
+                        //String savePath="/home/wxpicture/"+saveMap.get("photoId");
+                        String savePath="C:\\wxpicture\\"+saveMap.get("photoId");
                         File saveFile=new File(savePath);
                         if (!saveFile.exists()){
                             //路径不存在侧创建
@@ -112,7 +113,8 @@ public class FileManageController {
                         saveMap.put("photoId", multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoURL", ";" + pictureName);//图片url
                         //写入硬盘start
-                        String savePath="/home/wxpicture/"+saveMap.get("photoId");
+                        //String savePath="/home/wxpicture/"+saveMap.get("photoId");
+                        String savePath="C:\\wxpicture\\"+saveMap.get("photoId");
                         File saveFile=new File(savePath);
                         if (!saveFile.exists()){
                             //路径不存在侧创建
@@ -155,8 +157,9 @@ public class FileManageController {
                     //保存结束
                 } else {
                     File file2 = new File(destPath);//审核路径
-                    if (file2.exists() && file2.isFile())
+                    if (file2.exists() ){
                         file2.delete();//删除图片
+                    }
                     respMap.put("status", "-1");
                     return respMap;
                 }
