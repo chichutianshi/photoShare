@@ -34,8 +34,7 @@ public class UserController {
     @Autowired
     private UserSearchService userSearchService;
 
-    @Autowired
-    private Token token;
+
 
     /**
      * 获取前端code，此方法用于发送请求到auth.code2Session接口获取用户openid以及sessionkey
@@ -230,7 +229,7 @@ public class UserController {
             File file=new File(tempPath);
             if (file.exists()){
                 System.out.println("删除相册");
-                token.delete(tempPath);
+                Token.deleteDir(file);
             }
 
             return 1;
