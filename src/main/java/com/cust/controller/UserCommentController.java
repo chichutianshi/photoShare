@@ -83,8 +83,8 @@ public class UserCommentController {
         String photoId = request.getParameter("photoId");
 //        System.out.println(photoId);
 
-        String avatarUrl = request.getParameter("avatarUrl");
-        String nickName = request.getParameter("nickName");
+        String fromURL = request.getParameter("fromURL");
+        String fromname = request.getParameter("fromname");
 
         if (fromId == null) {
             return -2;
@@ -93,8 +93,8 @@ public class UserCommentController {
         photocomment.setContent(content);
         photocomment.setFromid(fromId);
         photocomment.setPhotoid(photoId);
-        photocomment.setFromname(nickName);
-        photocomment.setFromurl(avatarUrl);
+        photocomment.setFromname(fromname);
+        photocomment.setFromurl(fromURL);
         photocomment.setId(Token.createNewUserId());
         photocomment.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         if (!userCommentService.publishMainComment(photocomment)) {
@@ -157,8 +157,8 @@ public class UserCommentController {
         String fromId = (String) redisTemplate.opsForValue().get(thirdSessionKey);
         String content = request.getParameter("content");
         String commentId = request.getParameter("commentId");
-        String avatarUrl = request.getParameter("avatarUrl");
-        String nickName = request.getParameter("nickName");
+        String fromURL = request.getParameter("fromURL");
+        String fromname = request.getParameter("fromname");
 
         if (fromId == null) {
             return -2;
@@ -168,8 +168,8 @@ public class UserCommentController {
         commentreply.setContent(content);
         commentreply.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         commentreply.setFromid(fromId);
-        commentreply.setFromname(nickName);
-        commentreply.setFromurl(avatarUrl);
+        commentreply.setFromname(fromname);
+        commentreply.setFromurl(fromURL);
 
         if (!userCommentService.publishSonComment(commentreply)) {
             return -1;

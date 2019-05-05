@@ -20,11 +20,11 @@ public class UserSearchService {
         String photoURL;
         String[] URL;
         if (list != null) {
-            System.out.println(list);
+//            System.out.println(list);
             for (Map aList : list) {
                 photoURL = (String) aList.get("photoURL");//https://www.xqdiary.top
                 URL = photoURL.split(";");//http://localhost:8080/
-                aList.put("photoURL", "http://localhost:8080/loadPic/"+aList.get("photoId")+"/compress/" + URL[0]);
+                aList.put("photoURL", "http://www.xqdiary.top/loadPic/"+aList.get("photoId")+"/compress/" + URL[0]);
             }
             return list;
         }

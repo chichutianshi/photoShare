@@ -176,7 +176,7 @@ public class UserController {
      * 个人已发布管理
      * return  photoId,instruction,location,photoURL,likeNum,createTime,categories
      */
-    @RequestMapping("manageSend")
+    @RequestMapping("/manageSend")
     public List manageSend(HttpServletRequest request){
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
 
@@ -192,7 +192,7 @@ public class UserController {
            Map map= (Map) picList.get(k);
            String[] photoURLs=map.get("photoURL").toString().split(";");
            for (int i=0;i<photoURLs.length;i++){
-               photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+               photoURLs[i]="http://www.xqdiary.top/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
            }
            Map temp=new HashMap();
            temp.put("photoId",map.get("photoId"));
@@ -213,7 +213,7 @@ public class UserController {
      * 删除已发布的内容
      *1 成功 -1失败
      */
-    @RequestMapping("delSend")
+    @RequestMapping("/delSend")
     public int delSend(HttpServletRequest request){
         String picID=request.getParameter("photoId");
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
@@ -225,7 +225,8 @@ public class UserController {
 
         if (isDel){
             //File file=new File("/home/wxpicture/"+picID);
-            String tempPath="C:\\wxpicture\\"+picID;
+            //String tempPath="C:\\wxpicture\\"+picID;
+            String tempPath="/home/wxpicture/"+picID;
             File file=new File(tempPath);
             if (file.exists()){
                 System.out.println("删除相册");
@@ -242,7 +243,7 @@ public class UserController {
      * 修改个人昵称
      * 1 成功 -1失败
      */
-    @RequestMapping("changeNickName")
+    @RequestMapping("/changeNickName")
     public int changeNickName(HttpServletRequest request){
         Map userChange = new HashMap();
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
@@ -264,7 +265,7 @@ public class UserController {
      * 退出登陆
      * 1 成功 -1失败
      */
-    @RequestMapping("outLogin")
+    @RequestMapping("/outLogin")
     public int outLogin(HttpServletRequest request){
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
         redisTemplate.delete(thirdSessionKey);
