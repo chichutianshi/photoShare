@@ -50,14 +50,4 @@ public class UserService {
         return userMapper.changeNickName(userChange) > 0;
     }
 
-    public Map getPublisherInfo(String userId) {
-        Map userInfo = userMapper.selectUserByUserId(userId);
-        if (userInfo != null) {
-            if (!redisTemplate.hasKey(userId)) {
-                redisTemplate.opsForValue().set(userId, userInfo, 1, TimeUnit.DAYS);
-            }
-            return userInfo;
-        }
-        return null;
-    }
 }

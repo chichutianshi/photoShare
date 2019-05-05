@@ -43,6 +43,7 @@ public class UserSearchService {
     }
 
     public boolean delPic(String photoId){
-        return allphotosMapper.delPicById(photoId)>0?true:false;
+        return allphotosMapper.delPicById(photoId)>0;
     }
+
 }

@@ -17,5 +17,4 @@ public interface UserMapper {
 
     int changeNickName(Map userChange);
 
-    Map selectUserByUserId(String userId);
 }

@@ -13,6 +13,12 @@ public class Commentreply {
 
     private String createtime;
 
+    private String fromurl;
+
+    public String getFromurl() { return fromurl; }
+
+    public void setFromurl(String fromurl) { this.fromurl = fromurl; }
+
     public Integer getId() {
         return id;
     }
