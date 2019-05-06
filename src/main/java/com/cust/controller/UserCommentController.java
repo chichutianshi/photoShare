@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class UserCommentController {
@@ -96,18 +94,25 @@ public class UserCommentController {
             return -2;
         }
         Photocomment photocomment = new Photocomment();
+        Map<String,String> redisMianComment = new HashMap<>();
         photocomment.setContent(content);
+        redisMianComment.put("content",content);
         photocomment.setFromid(fromId);
+        redisMianComment.put("fromId",fromId);
         photocomment.setPhotoid(photoId);
         photocomment.setFromname(fromname);
+        redisMianComment.put("fromname",fromname);
         photocomment.setFromurl(fromURL);
+        redisMianComment.put("fromURL", fromURL);
         photocomment.setId(Token.createNewUserId());
+        redisMianComment.put("id", photocomment.getId());
         photocomment.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        redisMianComment.put("createTime", photocomment.getCreatetime());
         if (!userCommentService.publishMainComment(photocomment)) {
             return -1;
         }
         //同步redis中的评论
-        redisTemplate.opsForList().rightPush(md5PhotoId, photocomment);
+        redisTemplate.opsForList().rightPush(md5PhotoId, redisMianComment);
         return 1;
     }
 
@@ -170,17 +175,23 @@ public class UserCommentController {
             return -2;
         }
         Commentreply commentreply = new Commentreply();
+        Map<String, String> redisSonComment = new HashMap<>();
         commentreply.setCommentid(commentId);
         commentreply.setContent(content);
+        redisSonComment.put("content", content);
         commentreply.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        redisSonComment.put("createTime",commentreply.getCreatetime());
         commentreply.setFromid(fromId);
+        redisSonComment.put("fromId", fromId);
         commentreply.setFromname(fromname);
+        redisSonComment.put("fromname", fromname);
         commentreply.setFromurl(fromURL);
+        redisSonComment.put("fromURL",fromURL);
 
         if (!userCommentService.publishSonComment(commentreply)) {
             return -1;
         }
-        redisTemplate.opsForList().rightPush(commentId, commentreply);
+        redisTemplate.opsForList().rightPush(commentId, redisSonComment);
         return 1;
     }
 }

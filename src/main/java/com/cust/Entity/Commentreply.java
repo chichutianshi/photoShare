@@ -13,11 +13,11 @@ public class Commentreply {
 
     private String createtime;
 
-    private String fromURL;
+    private String fromurl;
 
-    public String getFromurl() { return fromURL; }
+    public String getFromurl() { return fromurl; }
 
-    public void setFromurl(String fromurl) { this.fromURL = fromurl; }
+    public void setFromurl(String fromurl) { this.fromurl = fromurl; }
 
     public Integer getId() {
         return id;
@@ -69,17 +69,14 @@ public class Commentreply {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", commentid=").append(commentid);
-        sb.append(", fromid=").append(fromid);
-        sb.append(", fromname=").append(fromname);
-        sb.append(", content=").append(content);
-        sb.append(", createtime=").append(createtime);
-        sb.append("]");
-        return sb.toString();
+        return "Commentreply{" +
+                "id=" + id +
+                ", commentid='" + commentid + '\'' +
+                ", fromid='" + fromid + '\'' +
+                ", fromname='" + fromname + '\'' +
+                ", content='" + content + '\'' +
+                ", createtime='" + createtime + '\'' +
+                ", fromurl='" + fromurl + '\'' +
+                '}';
     }
 }
