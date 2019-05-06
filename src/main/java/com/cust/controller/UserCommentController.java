@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class UserCommentController {
@@ -41,7 +42,7 @@ public class UserCommentController {
         if (Integer.valueOf(commentIndex) >= redisTemplate.opsForList().size(md5PhotoId) && Integer.valueOf(commentIndex) != 0) {
             return new ArrayList();
         }
-        List mainComments = redisTemplate.opsForList().range(md5PhotoId, Integer.valueOf(commentIndex), 10);
+        List mainComments = redisTemplate.opsForList().range(md5PhotoId, Integer.valueOf(commentIndex), Integer.valueOf(commentIndex) + 9);
         if (mainComments == null || mainComments.size() == 0) {
             mainComments = userCommentService.getMainComment(photoId);
         }
@@ -94,14 +95,14 @@ public class UserCommentController {
             return -2;
         }
         Photocomment photocomment = new Photocomment();
-        Map<String,String> redisMianComment = new HashMap<>();
+        Map<String, String> redisMianComment = new HashMap<>();
         photocomment.setContent(content);
-        redisMianComment.put("content",content);
+        redisMianComment.put("content", content);
         photocomment.setFromid(fromId);
-        redisMianComment.put("fromId",fromId);
+        redisMianComment.put("fromId", fromId);
         photocomment.setPhotoid(photoId);
         photocomment.setFromname(fromname);
-        redisMianComment.put("fromname",fromname);
+        redisMianComment.put("fromname", fromname);
         photocomment.setFromurl(fromURL);
         redisMianComment.put("fromURL", fromURL);
         photocomment.setId(Token.createNewUserId());
@@ -113,11 +114,13 @@ public class UserCommentController {
         }
         //同步redis中的评论
         redisTemplate.opsForList().rightPush(md5PhotoId, redisMianComment);
+        redisTemplate.expire(md5PhotoId, 1, TimeUnit.DAYS);
         return 1;
     }
 
 
-    /**e
+    /**
+     * e
      * 获取子评论
      * 前端携带主评论id
      *
@@ -131,7 +134,7 @@ public class UserCommentController {
         if (Integer.valueOf(commentIndex) >= redisTemplate.opsForList().size(commentId) && Integer.valueOf(commentIndex) != 0) {
             return new ArrayList();
         }
-        List sonComments = redisTemplate.opsForList().range(commentId, Integer.valueOf(commentIndex), 10);
+        List sonComments = redisTemplate.opsForList().range(commentId, Integer.valueOf(commentIndex), Integer.valueOf(commentIndex) + 9);
         if (sonComments == null || sonComments.size() == 0) {
             sonComments = userCommentService.getSonComment(commentId);
         }
@@ -180,18 +183,19 @@ public class UserCommentController {
         commentreply.setContent(content);
         redisSonComment.put("content", content);
         commentreply.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        redisSonComment.put("createTime",commentreply.getCreatetime());
+        redisSonComment.put("createTime", commentreply.getCreatetime());
         commentreply.setFromid(fromId);
         redisSonComment.put("fromId", fromId);
         commentreply.setFromname(fromname);
         redisSonComment.put("fromname", fromname);
         commentreply.setFromurl(fromURL);
-        redisSonComment.put("fromURL",fromURL);
+        redisSonComment.put("fromURL", fromURL);
 
         if (!userCommentService.publishSonComment(commentreply)) {
             return -1;
         }
         redisTemplate.opsForList().rightPush(commentId, redisSonComment);
+        redisTemplate.expire(commentId, 1, TimeUnit.DAYS);
         return 1;
     }
 }
