@@ -178,20 +178,21 @@ public class UserController {
     @RequestMapping("/manageSend")
     public List manageSend(HttpServletRequest request){
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
-
+        String selectRow=request.getParameter("selectRow");//个人值
         String userID= (String) redisTemplate.opsForValue().get(thirdSessionKey);
         if (userID==null){
             List list=new ArrayList();
             return null;
         }
 
-        List picList=userSearchService.getPicList(userID);
+        List picList=userSearchService.getPicList(userID,selectRow);
         List<Map> respList=new ArrayList<>();
         for (int k=0;k<picList.size();k++){
            Map map= (Map) picList.get(k);
            String[] photoURLs=map.get("photoURL").toString().split(";");
            for (int i=0;i<photoURLs.length;i++){
                photoURLs[i]="http://www.xqdiary.top/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+               //photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
            }
            Map temp=new HashMap();
            temp.put("photoId",map.get("photoId"));

@@ -28,7 +28,7 @@
     <select id="getPicListByUserID" resultType="map">
         select photoId,instruction,location,photoURL,likeNum,createTime,categories,user.avatarURL,user.nickname
         from allphotos,user
-         where ownerId=#{userID} and user.id=#{userID}
+         where ownerId=#{userID} and user.id=#{userID} order by allphotos.createTime DESC  LIMIT #{selectRow},6
     </select>
 
     <delete id="delPicById">

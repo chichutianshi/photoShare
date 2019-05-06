@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLOutput;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +38,11 @@ public class UserSearchService {
         return photoUrl;
     }
 
-    public List getPicList(String userID) {
-        List list=allphotosMapper.getPicListByUserID(userID);
+    public List getPicList(String userID,String selectRow) {
+        Map map=new HashMap();
+        map.put("userID",userID);
+        map.put("selectRow",Integer.parseInt(selectRow));
+        List list=allphotosMapper.getPicListByUserID(map);
         return list;
     }
 

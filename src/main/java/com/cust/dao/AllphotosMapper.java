@@ -23,7 +23,7 @@ public interface AllphotosMapper {
 
     String getPhotoUrlByphotoId(String photoId);
 
-    List<Map> getPicListByUserID(String userID);
+    List<Map> getPicListByUserID(Map map);
 
     int delPicById(String photoId);
 
