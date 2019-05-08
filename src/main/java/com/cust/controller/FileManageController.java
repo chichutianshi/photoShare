@@ -1,6 +1,7 @@
 package com.cust.controller;
 
 import com.cust.Utils.BaiduUtils;
+import com.cust.service.UserSearchService;
 import com.cust.service.UserService;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/fileCtrl")
@@ -26,6 +25,8 @@ public class FileManageController {
     private RedisTemplate<Object, Object> redisTemplate;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserSearchService userSearchService;
 
     @RequestMapping("/upPicture")
     public Map upPicture(HttpServletRequest request) {
@@ -92,6 +93,31 @@ public class FileManageController {
                         saveMap.put("createTime", (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
                         saveMap.put("categories", categories);
                         boolean isSave = userService.firstSave(saveMap);
+                        List picList= userSearchService.getPicList(userId,"0");
+                        //处理PicList数据
+                        List<Map> respList=new ArrayList<>();
+                        for (int k=0;k<picList.size();k++){
+                            Map map= (Map) picList.get(k);
+                            String[] photoURLs=map.get("photoURL").toString().split(";");
+                            for (int i=0;i<photoURLs.length;i++){
+                                photoURLs[i]="http://www.xqdiary.top/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                                //photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                            }
+                            Map temp=new HashMap();
+                            temp.put("photoId",map.get("photoId"));
+                            temp.put("instruction",map.get("instruction"));
+                            temp.put("location",map.get("location"));
+                            temp.put("photoURL",photoURLs);
+                            temp.put("likeNum",map.get("likeNum"));
+                            temp.put("createTime",map.get("createTime"));
+                            temp.put("categories",map.get("categories"));
+                            temp.put("avatarURL",map.get("avatarURL"));
+                            temp.put("nickname",map.get("nickname"));
+                            respList.add(temp);
+                        }
+                        //处理结束
+                        redisTemplate.opsForList().leftPush("pro"+userId,respList);//更新redis
+                        redisTemplate.expire("pro"+userId,12, TimeUnit.HOURS);
                         if (isSave) {
                             File file2 = new File(destPath);//审核路径
                             if (file2.exists() && file2.isFile())
@@ -108,6 +134,7 @@ public class FileManageController {
                         }
                     } else {
                         //同一相册继续加载
+                        String userId = (String) redisTemplate.opsForValue().get(multipartHttpServletRequest.getParameter("thirdSessionKey"));
                         Map<String, String> saveMap = new HashMap<>();
                         System.out.println("返回photoId:" + multipartHttpServletRequest.getParameter("photoId"));
                         saveMap.put("photoId", multipartHttpServletRequest.getParameter("photoId"));
@@ -139,6 +166,31 @@ public class FileManageController {
 
                         //更新相册信息
                         boolean isUpdate = userService.nextSave(saveMap);
+                        List picList= userSearchService.getPicList(userId,"0");
+                        //处理PicList数据
+                        List<Map> respList=new ArrayList<>();
+                        for (int k=0;k<picList.size();k++){
+                            Map map= (Map) picList.get(k);
+                            String[] photoURLs=map.get("photoURL").toString().split(";");
+                            for (int i=0;i<photoURLs.length;i++){
+                                photoURLs[i]="http://www.xqdiary.top/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                                //photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                            }
+                            Map temp=new HashMap();
+                            temp.put("photoId",map.get("photoId"));
+                            temp.put("instruction",map.get("instruction"));
+                            temp.put("location",map.get("location"));
+                            temp.put("photoURL",photoURLs);
+                            temp.put("likeNum",map.get("likeNum"));
+                            temp.put("createTime",map.get("createTime"));
+                            temp.put("categories",map.get("categories"));
+                            temp.put("avatarURL",map.get("avatarURL"));
+                            temp.put("nickname",map.get("nickname"));
+                            respList.add(temp);
+                        }
+                        //处理结束
+                        redisTemplate.opsForList().leftPush("pro"+userId,respList);//更新redis
+                        redisTemplate.expire("pro"+userId,12, TimeUnit.HOURS);
                         if (isUpdate) {
                             File file2 = new File(destPath);//审核路径
                             if (file2.exists() && file2.isFile())

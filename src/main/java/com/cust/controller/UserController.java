@@ -172,13 +172,55 @@ public class UserController {
     }
 
     /**
+     * 查看别人的作品
+     */
+    @RequestMapping("lookOtherPro")
+    public List lookOtherPro(HttpServletRequest request){
+        String userid=request.getParameter("userid");
+        String selectRow=request.getParameter("selectRow");//开始行数
+        String prokey="pro"+userid;
+        if (redisTemplate.hasKey(prokey)){
+            List proList= redisTemplate.opsForList().range(prokey,0,0);
+            List<Map> reList= (List<Map>) proList.get(0);
+            return reList;
+        }else {
+            List picList=userSearchService.getPicList(userid,selectRow);
+            List<Map> respList=new ArrayList<>();
+            for (int k=0;k<picList.size();k++){
+                Map map= (Map) picList.get(k);
+                String[] photoURLs=map.get("photoURL").toString().split(";");
+                for (int i=0;i<photoURLs.length;i++){
+                    photoURLs[i]="http://www.xqdiary.top/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                    //photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                }
+                Map temp=new HashMap();
+                temp.put("photoId",map.get("photoId"));
+                temp.put("instruction",map.get("instruction"));
+                temp.put("location",map.get("location"));
+                temp.put("photoURL",photoURLs);
+                temp.put("likeNum",map.get("likeNum"));
+                temp.put("createTime",map.get("createTime"));
+                temp.put("categories",map.get("categories"));
+                temp.put("avatarURL",map.get("avatarURL"));
+                temp.put("nickname",map.get("nickname"));
+                respList.add(temp);
+            }
+            redisTemplate.opsForList().leftPush(prokey,respList);
+            redisTemplate.expire(prokey,12,TimeUnit.HOURS);
+            return respList;
+        }
+
+    }
+
+
+    /**
      * 个人已发布管理
      * return  photoId,instruction,location,photoURL,likeNum,createTime,categories
      */
     @RequestMapping("/manageSend")
     public List manageSend(HttpServletRequest request){
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
-        String selectRow=request.getParameter("selectRow");//个人值
+        String selectRow=request.getParameter("selectRow");//开始行数
         String userID= (String) redisTemplate.opsForValue().get(thirdSessionKey);
         if (userID==null){
             List list=new ArrayList();
