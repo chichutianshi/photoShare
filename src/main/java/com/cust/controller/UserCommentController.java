@@ -99,7 +99,7 @@ public class UserCommentController {
         photocomment.setContent(content);
         redisMianComment.put("content", content);
         photocomment.setFromid(fromId);
-        redisMianComment.put("fromId", fromId);
+        redisMianComment.put("fromd", fromId);
         photocomment.setPhotoid(photoId);
         photocomment.setFromname(fromname);
         redisMianComment.put("fromname", fromname);
@@ -185,7 +185,7 @@ public class UserCommentController {
         commentreply.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         redisSonComment.put("createTime", commentreply.getCreatetime());
         commentreply.setFromid(fromId);
-        redisSonComment.put("fromId", fromId);
+        redisSonComment.put("fromid", fromId);
         commentreply.setFromname(fromname);
         redisSonComment.put("fromname", fromname);
         commentreply.setFromurl(fromURL);
@@ -197,5 +197,33 @@ public class UserCommentController {
         redisTemplate.opsForList().rightPush(commentId, redisSonComment);
         redisTemplate.expire(commentId, 1, TimeUnit.DAYS);
         return 1;
+    }
+
+    /**
+     * 评论后刷新当前页面
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/afterPublishRefresh")
+    public List afterPublishRefresh(HttpServletRequest request) {
+        MD5 m = new MD5();
+        String photoId = request.getParameter("photoId");
+        String commentId = request.getParameter("commentId");
+        System.out.println(commentId);
+        System.out.println(photoId);
+        if (photoId != null && photoId != "") {
+            System.out.println("photoId");
+            String md5PhotoId = m.calcMD5(photoId);
+            List publishedMainComment = redisTemplate.opsForList().range(md5PhotoId, 0, -1);
+            return publishedMainComment;
+        }
+        if (commentId != null && commentId != "") {
+            System.out.println("commentId");
+            List publishedSonComment = redisTemplate.opsForList().range(commentId, 0, -1);
+            System.out.println(publishedSonComment);
+            return publishedSonComment;
+        }
+        return new ArrayList();
     }
 }
