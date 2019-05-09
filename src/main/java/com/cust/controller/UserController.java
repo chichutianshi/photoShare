@@ -170,6 +170,36 @@ public class UserController {
         }
         return reqMap;
     }
+    /**
+     * 加载更多别人的作品
+     */
+    @RequestMapping("loadMorePro")
+    public List loadMorePro(HttpServletRequest request){
+        String userid=request.getParameter("userid");
+        String selectRow=request.getParameter("selectRow");//开始行数
+        List picList=userSearchService.getPicList(userid,selectRow);
+        List<Map> respList=new ArrayList<>();
+        for (int k=0;k<picList.size();k++){
+            Map map= (Map) picList.get(k);
+            String[] photoURLs=map.get("photoURL").toString().split(";");
+            for (int i=0;i<photoURLs.length;i++){
+                photoURLs[i]="http://www.xqdiary.top/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                //photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+            }
+            Map temp=new HashMap();
+            temp.put("photoId",map.get("photoId"));
+            temp.put("instruction",map.get("instruction"));
+            temp.put("location",map.get("location"));
+            temp.put("photoURL",photoURLs);
+            temp.put("likeNum",map.get("likeNum"));
+            temp.put("createTime",map.get("createTime"));
+            temp.put("categories",map.get("categories"));
+            temp.put("avatarURL",map.get("avatarURL"));
+            temp.put("nickname",map.get("nickname"));
+            respList.add(temp);
+        }
+        return respList;
+    }
 
     /**
      * 查看别人的作品
@@ -257,10 +287,12 @@ public class UserController {
      */
     @RequestMapping("/delSend")
     public int delSend(HttpServletRequest request){
+        String userid;
         String picID=request.getParameter("photoId");
         String thirdSessionKey=request.getParameter("thirdSessionKey");//个人值
-        String check= (String) redisTemplate.opsForValue().get(thirdSessionKey);
-        if (check==null){
+        if (redisTemplate.hasKey(thirdSessionKey)){
+             userid= (String) redisTemplate.opsForValue().get(thirdSessionKey);
+        }else {
             return -1;
         }
         boolean isDel=userSearchService.delPic(picID);
@@ -273,6 +305,32 @@ public class UserController {
             if (file.exists()){
                 System.out.println("删除相册");
                 Token.deleteDir(file);
+            }
+            //刷新redis里个人作品页面
+            if (redisTemplate.hasKey("pro"+userid)){
+                List picList=userSearchService.getPicList(userid,"0");
+                List<Map> respList=new ArrayList<>();
+                for (int k=0;k<picList.size();k++){
+                    Map map= (Map) picList.get(k);
+                    String[] photoURLs=map.get("photoURL").toString().split(";");
+                    for (int i=0;i<photoURLs.length;i++){
+                        photoURLs[i]="http://www.xqdiary.top/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                        //photoURLs[i]="http://localhost:8080/loadPic/"+map.get("photoId")+"/"+photoURLs[i];
+                    }
+                    Map temp=new HashMap();
+                    temp.put("photoId",map.get("photoId"));
+                    temp.put("instruction",map.get("instruction"));
+                    temp.put("location",map.get("location"));
+                    temp.put("photoURL",photoURLs);
+                    temp.put("likeNum",map.get("likeNum"));
+                    temp.put("createTime",map.get("createTime"));
+                    temp.put("categories",map.get("categories"));
+                    temp.put("avatarURL",map.get("avatarURL"));
+                    temp.put("nickname",map.get("nickname"));
+                    respList.add(temp);
+                }
+                redisTemplate.opsForList().leftPush("pro"+userid,respList);
+                redisTemplate.expire("pro"+userid,12,TimeUnit.HOURS);
             }
 
             return 1;
