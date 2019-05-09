@@ -99,7 +99,7 @@ public class UserCommentController {
         photocomment.setContent(content);
         redisMianComment.put("content", content);
         photocomment.setFromid(fromId);
-        redisMianComment.put("fromId", fromId);
+        redisMianComment.put("fromd", fromId);
         photocomment.setPhotoid(photoId);
         photocomment.setFromname(fromname);
         redisMianComment.put("fromname", fromname);
@@ -185,7 +185,7 @@ public class UserCommentController {
         commentreply.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         redisSonComment.put("createTime", commentreply.getCreatetime());
         commentreply.setFromid(fromId);
-        redisSonComment.put("fromId", fromId);
+        redisSonComment.put("fromid", fromId);
         commentreply.setFromname(fromname);
         redisSonComment.put("fromname", fromname);
         commentreply.setFromurl(fromURL);
