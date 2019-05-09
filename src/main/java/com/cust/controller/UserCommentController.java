@@ -198,4 +198,32 @@ public class UserCommentController {
         redisTemplate.expire(commentId, 1, TimeUnit.DAYS);
         return 1;
     }
+
+    /**
+     * 评论后刷新当前页面
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/afterPublishRefresh")
+    public List afterPublishRefresh(HttpServletRequest request) {
+        MD5 m = new MD5();
+        String photoId = request.getParameter("photoId");
+        String commentId = request.getParameter("commentId");
+        System.out.println(commentId);
+        System.out.println(photoId);
+        if (photoId != null && photoId != "") {
+            System.out.println("photoId");
+            String md5PhotoId = m.calcMD5(photoId);
+            List publishedMainComment = redisTemplate.opsForList().range(md5PhotoId, -1, -1);
+            return publishedMainComment;
+        }
+        if (commentId != null && commentId != "") {
+            System.out.println("commentId");
+            List publishedSonComment = redisTemplate.opsForList().range(commentId, -1, -1);
+            System.out.println(publishedSonComment);
+            return publishedSonComment;
+        }
+        return new ArrayList();
+    }
 }
