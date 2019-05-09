@@ -99,7 +99,7 @@ public class UserCommentController {
         photocomment.setContent(content);
         redisMianComment.put("content", content);
         photocomment.setFromid(fromId);
-        redisMianComment.put("fromd", fromId);
+        redisMianComment.put("fromid", fromId);
         photocomment.setPhotoid(photoId);
         photocomment.setFromname(fromname);
         redisMianComment.put("fromname", fromname);
