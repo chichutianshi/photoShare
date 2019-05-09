@@ -215,12 +215,12 @@ public class UserCommentController {
         if (photoId != null && photoId != "") {
             System.out.println("photoId");
             String md5PhotoId = m.calcMD5(photoId);
-            List publishedMainComment = redisTemplate.opsForList().range(md5PhotoId, -1, -1);
+            List publishedMainComment = redisTemplate.opsForList().range(md5PhotoId, 0, -1);
             return publishedMainComment;
         }
         if (commentId != null && commentId != "") {
             System.out.println("commentId");
-            List publishedSonComment = redisTemplate.opsForList().range(commentId, -1, -1);
+            List publishedSonComment = redisTemplate.opsForList().range(commentId, 0, -1);
             System.out.println(publishedSonComment);
             return publishedSonComment;
         }

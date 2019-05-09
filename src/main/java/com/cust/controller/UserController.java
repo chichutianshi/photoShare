@@ -174,7 +174,7 @@ public class UserController {
     /**
      * 查看别人的作品
      */
-    @RequestMapping("lookOtherPro")
+    @RequestMapping("/lookOtherPro")
     public List lookOtherPro(HttpServletRequest request){
         String userid=request.getParameter("userid");
         String selectRow=request.getParameter("selectRow");//开始行数
